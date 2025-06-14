@@ -45,15 +45,15 @@
         cameraFolder.open();
 
         // --- LIGHTING ------------------------------------------------------
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0);
+        const ambientLight = new THREE.AmbientLight(0xFFD6AA, 0);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0);
+        const directionalLight = new THREE.DirectionalLight(0xFFD6AA, 0);
         directionalLight.position.set(3, 3, 3);
         scene.add(directionalLight);
 
         // --- THREE POINT LIGHT SETUP ---------------------------------------------
         // Key Light
-        const keyLight = new THREE.RectAreaLight(0xffffff, 20);
+        const keyLight = new THREE.RectAreaLight(0xFFD6AA, 20);
         keyLight.position.set(11, 25, -9);
         // Set initial rotation (in radians)
         keyLight.rotation.set(
@@ -67,7 +67,7 @@
         keyLight.add(keyLightHelper);
 
         // Fill Light
-        const fillLight = new THREE.RectAreaLight(0xffffff, 10);
+        const fillLight = new THREE.RectAreaLight(0xFFD6AA, 10);
         fillLight.position.set(-10, 15, -10);
         fillLight.rotation.set(
             THREE.MathUtils.degToRad(0),
@@ -80,7 +80,7 @@
         keyLight.add(fillLightHelper);
 
         // Back Light
-        const backLight = new THREE.RectAreaLight(0xffffff, 5);
+        const backLight = new THREE.RectAreaLight(0xFFD6AA, 5);
         backLight.position.set(0.7, 21, 8);
         backLight.rotation.set(
             THREE.MathUtils.degToRad(306),

@@ -25,8 +25,6 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-        import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
-        import GUI from 'lil-gui';
 
         const backgroundControls = {
             showHdri: true,
@@ -50,24 +48,15 @@
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
 
-        // GUI
-        const gui = new GUI();
-        gui.add(renderer, 'toneMappingExposure', 0, 3, 0.01).name('Exposure');
-        const cameraFolder = gui.addFolder('Camera');
-        cameraFolder.add(camera.position, 'x', -20, 20, 0.01).name('Position X').listen();
-        cameraFolder.add(camera.position, 'y', -20, 20, 0.01).name('Position Y').listen();
-        cameraFolder.add(camera.position, 'z', -20, 20, 0.01).name('Position Z').listen();
-        cameraFolder.open();
-
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0);
+        const ambientLight = new THREE.AmbientLight(0xFFD6AA, 0);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0);
+        const directionalLight = new THREE.DirectionalLight(0xFFD6AA, 0);
         directionalLight.position.set(3, 3, 3);
         scene.add(directionalLight);
 
         // Three Point Lights
-        const keyLight = new THREE.RectAreaLight(0xffffff, 20);
+        const keyLight = new THREE.RectAreaLight(0xFFD6AA, 20);
         keyLight.position.set(11, 25, -9);
         keyLight.rotation.set(
             THREE.MathUtils.degToRad(225),
@@ -75,10 +64,8 @@
             THREE.MathUtils.degToRad(0)
         );
         scene.add(keyLight);
-        const keyLightHelper = new RectAreaLightHelper(keyLight);
-        keyLight.add(keyLightHelper);
 
-        const fillLight = new THREE.RectAreaLight(0xffffff, 10);
+        const fillLight = new THREE.RectAreaLight(0xFFD6AA, 10);
         fillLight.position.set(-10, 15, -10);
         fillLight.rotation.set(
             THREE.MathUtils.degToRad(0),
@@ -86,10 +73,8 @@
             THREE.MathUtils.degToRad(0)
         );
         scene.add(fillLight);
-        const fillLightHelper = new RectAreaLightHelper(fillLight);
-        fillLight.add(fillLightHelper);
 
-        const backLight = new THREE.RectAreaLight(0xffffff, 5);
+        const backLight = new THREE.RectAreaLight(0xFFD6AA, 5);
         backLight.position.set(0.7, 21, 8);
         backLight.rotation.set(
             THREE.MathUtils.degToRad(306),
@@ -97,88 +82,20 @@
             THREE.MathUtils.degToRad(0)
         );
         scene.add(backLight);
-        const backLightHelper = new RectAreaLightHelper(backLight);
-        backLight.add(backLightHelper);
 
-        // GUI for lights
-        const threePointFolder = gui.addFolder('Three Point Lights');
-        const keyLightRotation = {
-            x: THREE.MathUtils.radToDeg(keyLight.rotation.x),
-            y: THREE.MathUtils.radToDeg(keyLight.rotation.y),
-            z: THREE.MathUtils.radToDeg(keyLight.rotation.z)
-        };
-        const fillLightRotation = {
-            x: THREE.MathUtils.radToDeg(fillLight.rotation.x),
-            y: THREE.MathUtils.radToDeg(fillLight.rotation.y),
-            z: THREE.MathUtils.radToDeg(fillLight.rotation.z)
-        };
-        const backLightRotation = {
-            x: THREE.MathUtils.radToDeg(backLight.rotation.x),
-            y: THREE.MathUtils.radToDeg(backLight.rotation.y),
-            z: THREE.MathUtils.radToDeg(backLight.rotation.z)
-        };
-
-        const keyFolder = threePointFolder.addFolder('Key Light');
-        keyFolder.add(keyLight.position, 'x', -30, 30, 0.1).name('X');
-        keyFolder.add(keyLight.position, 'y', -30, 30, 0.1).name('Y');
-        keyFolder.add(keyLight.position, 'z', -30, 30, 0.1).name('Z');
-        keyFolder.add(keyLight, 'intensity', 0, 100, 0.01).name('Intensity');
-        keyFolder.add(keyLightRotation, 'x', 0, 360, 1).name('Rot X (deg)').onChange(v => keyLight.rotation.x = THREE.MathUtils.degToRad(v));
-        keyFolder.add(keyLightRotation, 'y', 0, 360, 1).name('Rot Y (deg)').onChange(v => keyLight.rotation.y = THREE.MathUtils.degToRad(v));
-        keyFolder.add(keyLightRotation, 'z', 0, 360, 1).name('Rot Z (deg)').onChange(v => keyLight.rotation.z = THREE.MathUtils.degToRad(v));
-
-        const fillFolder = threePointFolder.addFolder('Fill Light');
-        fillFolder.add(fillLight.position, 'x', -30, 30, 0.1).name('X');
-        fillFolder.add(fillLight.position, 'y', -30, 30, 0.1).name('Y');
-        fillFolder.add(fillLight.position, 'z', -30, 30, 0.1).name('Z');
-        fillFolder.add(fillLight, 'intensity', 0, 50, 0.01).name('Intensity');
-        fillFolder.add(fillLightRotation, 'x', 0, 360, 1).name('Rot X (deg)').onChange(v => fillLight.rotation.x = THREE.MathUtils.degToRad(v));
-        fillFolder.add(fillLightRotation, 'y', 0, 360, 1).name('Rot Y (deg)').onChange(v => fillLight.rotation.y = THREE.MathUtils.degToRad(v));
-        fillFolder.add(fillLightRotation, 'z', 0, 360, 1).name('Rot Z (deg)').onChange(v => fillLight.rotation.z = THREE.MathUtils.degToRad(v));
-
-        const backFolder = threePointFolder.addFolder('Back Light');
-        backFolder.add(backLight.position, 'x', -30, 30, 0.1).name('X');
-        backFolder.add(backLight.position, 'y', -30, 30, 0.1).name('Y');
-        backFolder.add(backLight.position, 'z', -30, 30, 0.1).name('Z');
-        backFolder.add(backLight, 'intensity', 0, 20, 0.01).name('Intensity');
-        backFolder.add(backLightRotation, 'x', 0, 360, 1).name('Rot X (deg)').onChange(v => backLight.rotation.x = THREE.MathUtils.degToRad(v));
-        backFolder.add(backLightRotation, 'y', 0, 360, 1).name('Rot Y (deg)').onChange(v => backLight.rotation.y = THREE.MathUtils.degToRad(v));
-        backFolder.add(backLightRotation, 'z', 0, 360, 1).name('Rot Z (deg)').onChange(v => backLight.rotation.z = THREE.MathUtils.degToRad(v));
-        threePointFolder.open();
-
-        const lightFolder = gui.addFolder('Lighting');
-        lightFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Ambient Intensity');
-        lightFolder.add(directionalLight, 'intensity', 0, 2, 0.01).name('Sun Intensity');
 
         // Environment
         const rgbeLoader = new RGBELoader();
-        rgbeLoader.load('./bloem_field_sunrise_1k.hdr', (texture) => {
+        rgbeLoader.load('https://pub-6f9afb118cd64d86b788e1312be6ea60.r2.dev/bloem_field_sunrise_1k.hdr', (texture) => {
             texture.mapping = THREE.EquirectangularReflectionMapping;
             scene.environment = texture;
             scene.background = new THREE.Color(backgroundControls.color);
-
-            const backgroundFolder = gui.addFolder('Background');
-            backgroundFolder.add(backgroundControls, 'showHdri').name('Show HDRI Background')
-                .onChange((show) => {
-                    if (show) {
-                        scene.background = texture;
-                    } else {
-                        scene.background = new THREE.Color(backgroundControls.color);
-                    }
-                });
-            backgroundFolder.addColor(backgroundControls, 'color').name('BG Color')
-                .onChange((colorValue) => {
-                    if (!backgroundControls.showHdri) {
-                        scene.background = new THREE.Color(colorValue);
-                    }
-                });
         });
-
         // Model loading
         const gltfLoader = new GLTFLoader();
         let modelGroup = null;
         gltfLoader.load(
-            'floating_island.glb', // Update this path if needed!
+            'https://pub-6f9afb118cd64d86b788e1312be6ea60.r2.dev/floating_island.glb', // Update this path if needed!
             (gltf) => {
                 modelGroup = gltf.scene;
                 scene.add(modelGroup);
