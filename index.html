@@ -41,7 +41,7 @@
         // --- STATE OBJECT FOR GUI (NEW) ------------------------------------
         const backgroundControls = {
             showHdri: true,
-            color: '#111122'
+            color: '#3e3e56'
         };
 
         // --- CORE SETUP ----------------------------------------------------
@@ -95,7 +95,7 @@
 
             // Set lighting and initial background
             scene.environment = texture;
-            scene.background = texture;
+            scene.background = new THREE.Color(backgroundControls.color);
             console.log('HDRI loaded and applied.');
 
             // *** NOW that the texture is loaded, we can create the GUI for it ***
