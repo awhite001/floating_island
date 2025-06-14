@@ -1,21 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Floating Island Vibe</title>
     <style>
-        body {
-            margin: 0;
-        }
-
-        canvas {
-            display: block;
-        }
+        body { margin: 0; }
+        canvas { display: block; }
     </style>
 </head>
-
 <body>
     <canvas class="webgl"></canvas>
 
@@ -45,7 +38,7 @@
         };
 
         // --- CORE SETUP ----------------------------------------------------
-
+        
         const scene = new THREE.Scene();
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -53,7 +46,7 @@
 
         const renderer = new THREE.WebGLRenderer({
             canvas: document.querySelector('canvas.webgl'),
-            antialias: true
+            antialias: true 
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -92,7 +85,7 @@
         const rgbeLoader = new RGBELoader();
         rgbeLoader.load('./bloem_field_sunrise_1k.hdr', (texture) => {
             texture.mapping = THREE.EquirectangularReflectionMapping;
-
+            
             // Set lighting and initial background
             scene.environment = texture;
             scene.background = texture;
@@ -118,14 +111,12 @@
 
 
         // --- MODEL LOADING -------------------------------------------------
-        let modelGroup = null;
-
+        const gltfLoader = new GLTFLoader();
         gltfLoader.load(
-            'floating_island.glb',
+            'floating_island.glb', 
             (gltf) => {
                 console.log('Success! Model loaded.', gltf);
-                modelGroup = gltf.scene;
-                scene.add(modelGroup);
+                scene.add(gltf.scene);
             }
         );
 
@@ -138,7 +129,7 @@
         animate();
 
         // --- ANIMATION LOOP ------------------------------------------------
-
+        
 
         // --- RESPONSIVENESS ------------------------------------------------
         window.addEventListener('resize', () => {
@@ -150,5 +141,4 @@
 
     </script>
 </body>
-
 </html>
