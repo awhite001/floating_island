@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating Island Vibe</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas class="webgl"></canvas>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/",
+                "lil-gui": "https://unpkg.com/lil-gui@0.19.1/dist/lil-gui.esm.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        console.log("Script is running!");
+
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+        import GUI from 'lil-gui';
+
+        // --- STATE OBJECT FOR GUI (NEW) ------------------------------------
+        const backgroundControls = {
+            showHdri: true,
+            color: '#111122'
+        };
+
+        // --- CORE SETUP ----------------------------------------------------
+
+        const scene = new THREE.Scene();
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(-12, 20, -22);
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('canvas.webgl'),
+            antialias: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.79;
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        // --- GUI SETUP (PART 1) -------------------------------------------
+        // We create the main GUI and controls that DON'T depend on loaded files.
+        const gui = new GUI();
+        gui.add(renderer, 'toneMappingExposure', 0, 3, 0.01).name('Exposure');
+
+        const cameraFolder = gui.addFolder('Camera');
+        cameraFolder.add(camera.position, 'x', -20, 20, 0.01).name('Position X').listen();
+        cameraFolder.add(camera.position, 'y', -20, 20, 0.01).name('Position Y').listen();
+        cameraFolder.add(camera.position, 'z', -20, 20, 0.01).name('Position Z').listen();
+        cameraFolder.open();
+
+        // --- LIGHTING ------------------------------------------------------
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0);
+        directionalLight.position.set(3, 3, 3);
+        scene.add(directionalLight);
+
+        // Add lighting controls to the GUI
+        const lightFolder = gui.addFolder('Lighting');
+        lightFolder.add(ambientLight, 'intensity', 0, 2, 0.01).name('Ambient Intensity');
+        lightFolder.add(directionalLight, 'intensity', 0, 2, 0.01).name('Sun Intensity');
+
+
+        // --- ENVIRONMENT & GUI (PART 2) (MODIFIED SECTION) ---------------
+        const rgbeLoader = new RGBELoader();
+        rgbeLoader.load('./bloem_field_sunrise_1k.hdr', (texture) => {
+            texture.mapping = THREE.EquirectangularReflectionMapping;
+
+            // Set lighting and initial background
+            scene.environment = texture;
+            scene.background = texture;
+            console.log('HDRI loaded and applied.');
+
+            // *** NOW that the texture is loaded, we can create the GUI for it ***
+            const backgroundFolder = gui.addFolder('Background');
+            backgroundFolder.add(backgroundControls, 'showHdri').name('Show HDRI Background')
+                .onChange((show) => {
+                    if (show) {
+                        scene.background = texture; // Use the loaded texture
+                    } else {
+                        scene.background = new THREE.Color(backgroundControls.color);
+                    }
+                });
+            backgroundFolder.addColor(backgroundControls, 'color').name('BG Color')
+                .onChange((colorValue) => {
+                    if (!backgroundControls.showHdri) {
+                        scene.background = new THREE.Color(colorValue);
+                    }
+                });
+        });
+
+
+        // --- MODEL LOADING -------------------------------------------------
+        let modelGroup = null;
+
+        gltfLoader.load(
+            'floating_island.glb',
+            (gltf) => {
+                console.log('Success! Model loaded.', gltf);
+                modelGroup = gltf.scene;
+                scene.add(modelGroup);
+            }
+        );
+
+        // --- ANIMATION LOOP ------------------------------------------------
+        const animate = () => {
+            controls.update();
+            renderer.render(scene, camera);
+            window.requestAnimationFrame(animate);
+        };
+        animate();
+
+        // --- ANIMATION LOOP ------------------------------------------------
+
+
+        // --- RESPONSIVENESS ------------------------------------------------
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        });
+
+    </script>
+</body>
+
+</html>
